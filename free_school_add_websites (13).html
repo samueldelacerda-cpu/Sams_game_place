@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free School</title>
+<style>
+body{margin:0;background:#101322;color:white;font-family:Arial;text-align:center}
+header{padding:30px;background:#181d38}
+h1{font-size:42px;margin:0 0 8px}
+.site-list{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding:25px}
+.site-button{display:inline-block;padding:12px 18px;border-radius:12px;background:#1d2344;color:white;text-decoration:none;font-weight:bold}
+.add-site-box{max-width:760px;margin:25px auto;padding:20px;background:#1d2344;border-radius:16px;box-sizing:border-box}
+.add-site-box input{width:38%;box-sizing:border-box;padding:12px;border:0;border-radius:10px;margin:5px}
+.add-site-box button{padding:12px 18px;border:0;border-radius:10px;cursor:pointer;font-weight:bold}
+.remove-site{font-size:12px;margin-left:-5px;padding:4px 7px!important}
+</style>
+</head>
+<body>
+<header><h1>Free School</h1><p>🌐 Websites for you and your friends</p></header>
+
+<div class="add-site-box">
+<h2>➕ Add a Website</h2>
+<input id="siteName" placeholder="Website name">
+<input id="siteUrl" placeholder="https://example.com">
+<button onclick="addWebsite()">Add Website</button>
+<p id="siteMessage"></p>
+</div>
+
+<div id="sites" class="site-list"></div>
+
+<script>
+const starterSites=[
+  ["🍕 Pizza Edition","https://pizzaedition.com/"],
+  ["🌍 Conflict of Nations","https://www.conflictnations.com/play.php?bust=1&uid=104865377&gameID=-1&source=browser-desktop"],
+  ["🏎️ GoKarts.io","https://gokarts.io/"]
+];
+
+function loadSites(){
+  const saved=JSON.parse(localStorage.getItem("freeSchoolSites")||"null");
+  const sites=saved||starterSites;
+  const box=document.getElementById("sites");
+  box.innerHTML="";
+  sites.forEach((site,i)=>{
+    const wrap=document.createElement("span");
+    const a=document.createElement("a");
+    a.className="site-button"; a.href=site[1]; a.target="_blank"; a.rel="noopener noreferrer";
+    a.textContent=site[0];
+    const remove=document.createElement("button");
+    remove.className="remove-site"; remove.textContent="✕";
+    remove.onclick=()=>{sites.splice(i,1);localStorage.setItem("freeSchoolSites",JSON.stringify(sites));loadSites();};
+    wrap.append(a,remove); box.appendChild(wrap);
+  });
+}
+
+function addWebsite(){
+  const name=document.getElementById("siteName").value.trim();
+  let url=document.getElementById("siteUrl").value.trim();
+  const msg=document.getElementById("siteMessage");
+  if(!name||!url){msg.textContent="Enter a name and a URL 😭";return;}
+  if(!/^https?:\/\//i.test(url)) url="https://"+url;
+  try{new URL(url)}catch(e){msg.textContent="That URL looks invalid.";return;}
+  const sites=JSON.parse(localStorage.getItem("freeSchoolSites")||"null")||starterSites.slice();
+  sites.push([name,url]);
+  localStorage.setItem("freeSchoolSites",JSON.stringify(sites));
+  document.getElementById("siteName").value="";
+  document.getElementById("siteUrl").value="";
+  msg.textContent="Added! 🔥";
+  loadSites();
+}
+loadSites();
+</script>
+</body>
+</html>
